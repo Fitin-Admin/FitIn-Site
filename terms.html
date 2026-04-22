@@ -1,0 +1,144 @@
+import Link from "next/link";
+
+export const metadata = {
+  title: "Terms of Service | FitIn",
+  description: "Read the FitIn Terms of Service.",
+};
+
+export default function TermsPage() {
+  return (
+    <main className="min-h-screen bg-white text-slate-900">
+      <div className="mx-auto max-w-4xl px-6 py-12 md:px-8 md:py-16">
+        <div className="mb-10">
+          <Link
+            href="/"
+            className="inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900"
+          >
+            ← Back to FitIn
+          </Link>
+        </div>
+
+        <header className="mb-10 border-b border-slate-200 pb-6">
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Terms of Service
+          </h1>
+          <p className="mt-3 text-sm text-slate-500">
+            Effective date: April 21, 2026
+          </p>
+        </header>
+
+        <article className="prose prose-slate max-w-none">
+          <p>
+            Welcome to FitIn. These Terms of Service govern your access to and use
+            of the FitIn website, mobile application, and related services. By
+            accessing or using FitIn, you agree to be bound by these Terms.
+          </p>
+
+          <h2>1. Eligibility</h2>
+          <p>
+            You must be at least 18 years old to use FitIn. By using the service,
+            you represent and warrant that you are legally able to enter into this
+            agreement and meet all eligibility requirements.
+          </p>
+
+          <h2>2. Account Registration</h2>
+          <p>
+            To access certain features, you may be required to create an account.
+            You agree to provide accurate, current, and complete information and to
+            keep your login credentials secure. You are responsible for all
+            activity that occurs under your account.
+          </p>
+
+          <h2>3. Acceptable Use</h2>
+          <p>You agree not to:</p>
+          <ul>
+            <li>Use FitIn for any unlawful, harmful, or fraudulent purpose.</li>
+            <li>Harass, threaten, or impersonate other users.</li>
+            <li>Post false, misleading, obscene, hateful, or abusive content.</li>
+            <li>Attempt to gain unauthorized access to FitIn systems or data.</li>
+            <li>Use bots, scraping tools, or automated methods to access the service.</li>
+          </ul>
+
+          <h2>4. User Content</h2>
+          <p>
+            You retain ownership of the content you submit, post, or display
+            through FitIn. By submitting content, you grant FitIn a non-exclusive,
+            worldwide, royalty-free license to host, use, reproduce, modify,
+            display, and distribute that content solely for the purpose of
+            operating, improving, and promoting the service.
+          </p>
+
+          <h2>5. Safety and Moderation</h2>
+          <p>
+            FitIn may review, remove, restrict, or moderate content or accounts at
+            its discretion to promote platform safety, comply with law, or enforce
+            these Terms. We do not guarantee that all content will be monitored in
+            real time.
+          </p>
+
+          <h2>6. Subscriptions and Payments</h2>
+          <p>
+            Certain features may require a paid subscription. Pricing, billing
+            cycles, auto-renewal terms, and cancellation rights will be presented
+            to you at the time of purchase. Payments are processed by third-party
+            providers such as Apple App Store, Google Play, or other payment
+            processors, and may be subject to their separate terms.
+          </p>
+
+          <h2>7. Termination</h2>
+          <p>
+            We may suspend or terminate your access to FitIn at any time if you
+            violate these Terms, pose a risk to other users, or create legal or
+            operational exposure for the platform. You may stop using the service
+            at any time.
+          </p>
+
+          <h2>8. Privacy</h2>
+          <p>
+            Your use of FitIn is also governed by our Privacy Policy. Please review
+            it carefully to understand how we collect, use, and share information.
+          </p>
+
+          <h2>9. Disclaimers</h2>
+          <p>
+            FitIn is provided on an &quot;as is&quot; and &quot;as available&quot;
+            basis without warranties of any kind, express or implied, including
+            merchantability, fitness for a particular purpose, non-infringement,
+            and uninterrupted availability.
+          </p>
+
+          <h2>10. Limitation of Liability</h2>
+          <p>
+            To the maximum extent permitted by law, FitIn and its affiliates,
+            officers, directors, employees, and agents shall not be liable for any
+            indirect, incidental, special, consequential, exemplary, or punitive
+            damages, or any loss of profits, data, goodwill, or business
+            interruption arising from or related to your use of the service.
+          </p>
+
+          <h2>11. Indemnification</h2>
+          <p>
+            You agree to defend, indemnify, and hold harmless FitIn and its
+            affiliates from and against claims, liabilities, damages, losses, and
+            expenses arising out of your use of the service, your content, or your
+            violation of these Terms.
+          </p>
+
+          <h2>12. Changes to These Terms</h2>
+          <p>
+            We may update these Terms from time to time. If we make material
+            changes, we will update the effective date above and may provide
+            additional notice where required by law. Continued use of FitIn after
+            changes become effective constitutes acceptance of the updated Terms.
+          </p>
+
+          <h2>13. Contact</h2>
+          <p>
+            If you have questions about these Terms, contact us at{" "}
+            <a href="mailto:support@fitin.fit">support@fitin.fit</a>.
+          </p>
+        </article>
+      </div>
+    </main>
+  );
+}
