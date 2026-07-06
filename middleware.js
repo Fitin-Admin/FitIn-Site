@@ -11,7 +11,7 @@ export const config = {
   matcher: '/get',
 };
 
-const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=REPLACE_WITH_PACKAGE_NAME';
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.fitininc.fit&pcampaignid=web_share';
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
