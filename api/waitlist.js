@@ -3,27 +3,15 @@
 // this avoids a bundler conflict that happens when this file and
 // middleware.js both try to run on the Edge runtime together.
 //
-// SETUP:
-// 1. Vercel dashboard -> Storage -> Upstash -> Connect to "fitin-site".
-//    (You've already done this step.)
-// 2. After connecting, check Project Settings -> Environment Variables
-//    to see the exact names Vercel created (e.g. UPSTASH_REDIS_REST_URL,
-//    or a custom-prefixed name if you set one). The code below checks a
-//    few common patterns automatically, but confirm they match once live.
+// Confirmed env vars from Project Settings -> Environment Variables:
+// KV_REST_API_URL and KV_REST_API_TOKEN (created by the Upstash integration).
 
 import { Redis } from '@upstash/redis';
 
-const redisUrl =
-  process.env.UPSTASH_REDIS_REST_URL ||
-  process.env.KV_REST_API_URL ||
-  process.env.STORAGE_URL ||
-  process.env.STORAGE_KV_REST_API_URL;
-
-const redisToken =
-  process.env.UPSTASH_REDIS_REST_TOKEN ||
-  process.env.KV_REST_API_TOKEN ||
-  process.env.STORAGE_TOKEN ||
-  process.env.STORAGE_KV_REST_API_TOKEN;
+// Confirmed from Vercel Project Settings -> Environment Variables:
+// KV_REST_API_URL and KV_REST_API_TOKEN (created by the Upstash integration).
+const redisUrl = process.env.KV_REST_API_URL;
+const redisToken = process.env.KV_REST_API_TOKEN;
 
 const kv = new Redis({ url: redisUrl, token: redisToken });
 
