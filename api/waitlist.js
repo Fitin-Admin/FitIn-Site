@@ -1,45 +1,55 @@
-// Vercel Serverless Function — stores iOS waitlist emails in Upstash Redis.
-// Drop this file at /api/waitlist.js in your Vercel project. No extra
-// framework needed — Vercel auto-detects anything under /api as a function.
+// Vercel Serverless Function (Node.js runtime) — stores iOS waitlist
+// emails in Upstash Redis. Runs as a normal Node function, NOT Edge —
+// this avoids a bundler conflict that happens when this file and
+// middleware.js both try to run on the Edge runtime together.
 //
-// SETUP (one time, ~2 minutes):
-// 1. Vercel dashboard -> Storage -> Marketplace Database Providers -> Upstash -> Create.
-//    Connect it to the "fitin-site" project. This injects env vars
-//    (UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN) automatically.
-// 2. Run: npm install @upstash/redis
-// 3. Deploy. Upstash's free tier is more than enough for waitlist signups.
+// SETUP:
+// 1. Vercel dashboard -> Storage -> Upstash -> Connect to "fitin-site".
+//    (You've already done this step.)
+// 2. After connecting, check Project Settings -> Environment Variables
+//    to see the exact names Vercel created (e.g. UPSTASH_REDIS_REST_URL,
+//    or a custom-prefixed name if you set one). The code below checks a
+//    few common patterns automatically, but confirm they match once live.
 
 import { Redis } from '@upstash/redis';
 
-const kv = Redis.fromEnv();
+const redisUrl =
+  process.env.UPSTASH_REDIS_REST_URL ||
+  process.env.KV_REST_API_URL ||
+  process.env.STORAGE_URL ||
+  process.env.STORAGE_KV_REST_API_URL;
 
-export const config = {
-  runtime: 'edge',
-};
+const redisToken =
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  process.env.KV_REST_API_TOKEN ||
+  process.env.STORAGE_TOKEN ||
+  process.env.STORAGE_KV_REST_API_TOKEN;
+
+const kv = new Redis({ url: redisUrl, token: redisToken });
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default async function handler(request) {
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  if (!redisUrl || !redisToken) {
+    res.status(500).json({ error: 'Storage not configured' });
+    return;
   }
 
   try {
-    const body = await request.json();
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
     const email = (body.email || '').trim().toLowerCase();
     const source = body.source || 'ios-waitlist';
 
     if (!EMAIL_PATTERN.test(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      res.status(400).json({ error: 'Invalid email' });
+      return;
     }
 
-    // De-dupe: use the email itself as the key, store signup metadata as the value.
     const key = `waitlist:${email}`;
     const alreadyExists = await kv.get(key);
 
@@ -49,19 +59,11 @@ export default async function handler(request) {
         source,
         joinedAt: new Date().toISOString(),
       });
-
-      // Maintain a running count for easy tracking.
       await kv.incr('waitlist:count');
     }
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    res.status(200).json({ success: true });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    res.status(500).json({ error: 'Server error' });
   }
 }
