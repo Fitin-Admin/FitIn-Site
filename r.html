@@ -57,7 +57,7 @@
             <span class="redirect-code" id="redirect-code"></span>
           </div>
           <button class="btn btn-primary redirect-continue" id="redirect-continue">Continue</button>
-          <p class="redirect-note">iOS coming soon — this link opens Google Play for now.</p>
+          <p class="redirect-note" id="redirect-note">iOS coming soon — this link opens Google Play for now.</p>
         </div>
       </div>
     </main>
@@ -66,6 +66,9 @@
       (function () {
         var PLAY_STORE_URL =
           "https://play.google.com/store/apps/details?id=com.fitininc.fit&pcampaignid=web_share";
+        // iOS isn't approved yet — matches the /get smart link's behavior (middleware.js):
+        // Android goes to Google Play, everything else goes to the waitlist.
+        var WAITLIST_URL = "/waitlist.html";
         var ANDROID_PACKAGE = "com.fitininc.fit";
         var APP_SCHEME = "fitinapp";
         // Prod-only: this static site serves live marketing traffic against the prod Convex deployment.
@@ -85,6 +88,10 @@
           var codeEl = document.getElementById("redirect-code");
           codeEl.textContent = code;
           codeWrap.style.display = "block";
+        }
+        if (!isAndroid) {
+          document.getElementById("redirect-note").textContent =
+            "iOS isn't approved yet — tap continue to join the waitlist.";
         }
 
         function logClick() {
@@ -126,7 +133,11 @@
               ";end";
             return;
           }
-          window.location.href = PLAY_STORE_URL;
+          // iOS/desktop/other: send to the waitlist, passing the code along in case
+          // waitlist attribution to an influencer gets built out later.
+          window.location.href = code
+            ? WAITLIST_URL + "?ref=" + encodeURIComponent(code)
+            : WAITLIST_URL;
         }
 
         document.getElementById("redirect-continue").addEventListener("click", function () {
