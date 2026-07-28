@@ -4,6 +4,7 @@
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/safety", "destination": "/safety.html" },
     { "source": "/delete-account", "destination": "/delete-account.html" },
-    { "source": "/support", "destination": "/support.html" }
+    { "source": "/support", "destination": "/support.html" },
+    { "source": "/r/:code", "destination": "/r.html?code=:code" }
   ]
 }

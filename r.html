@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Continue to FitIn</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" type="image/png" href="/Images/Logo/favicon.png" />
+    <style>
+      .redirect-card {
+        max-width: 480px;
+        margin: 4rem auto;
+        padding: clamp(1.75rem, 4vw, 2.5rem);
+        background: var(--surface-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-card);
+        text-align: center;
+      }
+      .redirect-card h1 {
+        color: var(--text-primary);
+        font-size: 1.6rem;
+        margin: 0 0 0.6rem;
+      }
+      .redirect-code {
+        display: inline-block;
+        margin: 0.75rem 0 1.5rem;
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border-gold);
+        background: var(--gold-200);
+        color: var(--gold-400);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .redirect-continue {
+        width: 100%;
+        border: none;
+        cursor: pointer;
+        font: inherit;
+      }
+      .redirect-note {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main-content">
+      <div class="site-shell">
+        <div class="redirect-card">
+          <h1>You're headed to FitIn</h1>
+          <p id="redirect-message">Tap continue to open the app (or the app store if you don't have it yet).</p>
+          <div id="redirect-code-wrap" style="display:none">
+            <span class="redirect-code" id="redirect-code"></span>
+          </div>
+          <button class="btn btn-primary redirect-continue" id="redirect-continue">Continue</button>
+          <p class="redirect-note">iOS coming soon — this link opens Google Play for now.</p>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var PLAY_STORE_URL =
+          "https://play.google.com/store/apps/details?id=com.fitininc.fit&pcampaignid=web_share";
+        var ANDROID_PACKAGE = "com.fitininc.fit";
+        var APP_SCHEME = "fitinapp";
+        // Prod-only: this static site serves live marketing traffic against the prod Convex deployment.
+        var CLICK_ENDPOINT = "https://elegant-starling-944.convex.site/referral/click";
+        var CODE_CLIPBOARD_PREFIX = "FITIN-CODE:";
+
+        var params = new URLSearchParams(window.location.search);
+        var code = (params.get("code") || "").trim().toUpperCase();
+
+        var ua = navigator.userAgent || "";
+        var isAndroid = /android/i.test(ua);
+        var isIOS = /iphone|ipad|ipod/i.test(ua);
+        var platform = isAndroid ? "android" : isIOS ? "ios" : "other";
+
+        if (code) {
+          var codeWrap = document.getElementById("redirect-code-wrap");
+          var codeEl = document.getElementById("redirect-code");
+          codeEl.textContent = code;
+          codeWrap.style.display = "block";
+        }
+
+        function logClick() {
+          if (!code) return;
+          var url =
+            CLICK_ENDPOINT +
+            "?code=" +
+            encodeURIComponent(code) +
+            "&platform=" +
+            encodeURIComponent(platform);
+          try {
+            fetch(url, { method: "GET", mode: "cors", keepalive: true }).catch(function () {});
+          } catch (e) {
+            /* best-effort only */
+          }
+        }
+
+        function copyCodeToClipboard() {
+          if (!code || !navigator.clipboard || !navigator.clipboard.writeText) return;
+          try {
+            navigator.clipboard.writeText(CODE_CLIPBOARD_PREFIX + code).catch(function () {});
+          } catch (e) {
+            /* clipboard may be unavailable — manual code entry is the fallback */
+          }
+        }
+
+        function redirectToStoreOrApp() {
+          if (isAndroid) {
+            var fallback = encodeURIComponent(PLAY_STORE_URL);
+            window.location.href =
+              "intent://redeem?code=" +
+              encodeURIComponent(code) +
+              "#Intent;scheme=" +
+              APP_SCHEME +
+              ";package=" +
+              ANDROID_PACKAGE +
+              ";S.browser_fallback_url=" +
+              fallback +
+              ";end";
+            return;
+          }
+          window.location.href = PLAY_STORE_URL;
+        }
+
+        document.getElementById("redirect-continue").addEventListener("click", function () {
+          copyCodeToClipboard();
+          logClick();
+          redirectToStoreOrApp();
+        });
+      })();
+    </script>
+  </body>
+</html>
