@@ -75,8 +75,20 @@
         var CLICK_ENDPOINT = "https://elegant-starling-944.convex.site/referral/click";
         var CODE_CLIPBOARD_PREFIX = "FITIN-CODE:";
 
-        var params = new URLSearchParams(window.location.search);
-        var code = (params.get("code") || "").trim().toUpperCase();
+        // Vercel's /r/:code -> /r.html?code=:code rewrite is server-side only —
+        // the browser's address bar (and window.location) still shows the
+        // original /r/:code path, never the rewritten query string. So the
+        // code has to be read from the path, not window.location.search.
+        function extractCode() {
+          var pathMatch = window.location.pathname.match(/\/r\/([^/]+)/i);
+          if (pathMatch && pathMatch[1]) {
+            return decodeURIComponent(pathMatch[1]).trim().toUpperCase();
+          }
+          // Fallback for local testing directly against r.html?code=...
+          var params = new URLSearchParams(window.location.search);
+          return (params.get("code") || "").trim().toUpperCase();
+        }
+        var code = extractCode();
 
         var ua = navigator.userAgent || "";
         var isAndroid = /android/i.test(ua);
